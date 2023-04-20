@@ -22,7 +22,7 @@ def read_config():
 def get_args():
     parser = argparse.ArgumentParser(description='Arguments')
     parser.add_argument('--experiment-name', type=str,
-                        default='Debug', help='Name of the experiment')
+                        default='Train2', help='Name of the experiment')
     # Basic arguments
     parser.add_argument('--device', type=str, default='mps',
                         help='What to use for compute [GPU, CPU,MPS]  will be called')
@@ -33,27 +33,42 @@ def get_args():
     parser.add_argument('--sequence_length', type=int, nargs='+',
                         default=25, help='The length of sequence of blocks to be loaded')
     parser.add_argument('--observable_length', type=int, nargs='+',
-                        default=5, help='The length of observable sequence of blocks')
+                        default=25, help='The length of observable sequence of blocks')
     # Hyperparameters for A2C
     parser.add_argument('--gamma', type=float, default=0.99, metavar='G',
                         help='discount factor for reward (default: 0.99)')
     parser.add_argument('--tau', type=float, default=0.005, metavar='G',
                         help='target smoothing coefficient(τ) (default: 0.005)')
-    parser.add_argument('--learning-rate', type=float, default=1e-6,
+    parser.add_argument('--learning-rate', type=float, default=1e-4,
                         metavar='η', help='Learning rate, only works for A2C')
     parser.add_argument('--alpha', type=float, default=0.2, metavar='G',
                         help='Temperature parameter α determines the relative importance of the entropy\
                             term against the reward (default: 0.2)')
     parser.add_argument('--automatic_entropy_tuning', type=bool, default=False, metavar='G',
                         help='Automaically adjust α (default: False)')
-    parser.add_argument('--hidden_size', type=int, default=256, metavar='N',
-                        help='hidden size (default: 256)')
-
+    parser.add_argument('--hidden_size', type=int, default=128, metavar='N',
+                        help='hidden size (default: 128)')
+    # Arguments for DT
+    parser.add_argument('--context_len', type=int,
+                        default=20, help='The length of context')
+    parser.add_argument('--n_blocks', type=int, default=3,
+                        help='The number of blocks')
+    # parser.add_argument('--embed_dim', type=int, default=128, help='The dimension of embedding')
+    parser.add_argument('--n_heads', type=int, default=1,
+                        help='The number of heads')
+    parser.add_argument('--dropout_p', type=float,
+                        default=0.1, help='The dropout probability')
+    parser.add_argument('--wt_decay', type=float,
+                        default=1e-4, help='The weight decay')
+    parser.add_argument('--warmup_steps', type=int,
+                        default=10000, help='The number of warmup steps')
     # Arguments for eval, logging, and printing
-    parser.add_argument('--load-model', action='store_true',
+    parser.add_argument('--eval_only', type=bool, default='True',
+                        help='Only Evaluate the model')
+    parser.add_argument('--load-model', type=bool, default='True',
                         help='Load Model')
     parser.add_argument('--training_episodes', type=int, nargs='+',
-                        default=1000, help='The number of episodes to train')
+                        default=100000, help='The number of episodes to train')
     parser.add_argument('--replay_size', type=int, default=1000000,
                         help='The size of replay memory')
     parser.add_argument('--batch_size', type=int, default=256,
@@ -67,14 +82,14 @@ def get_args():
                         help='Evaluates a policy a policy every 10 episode (default: True)')
     # parser.add_argument('--evaluation-episodes', type=int, default=100,
     #                     metavar='N', help='Number of episodes evaluated')
-    parser.add_argument('--model-path', type=str,
+    parser.add_argument('--model-path', type=str, default='logs/experiment/checkpoints/sac_checkpoint_Train2-2023.04.20-12-06-50_1000',
                         help='The path to load model')
     parser.add_argument('--model-save-interval',  type=int,
                         default=200, help='How often to save the model')
     parser.add_argument('--model-save-path', type=str,
                         default='./logs/experiment', help='The path to save the trained model')
     parser.add_argument('--print-log-interval',     type=int,
-                        default=10, help='How often to print training logs')
+                        default=25, help='How often to print training logs')
 
     # Dataset arguments
     parser.add_argument('--load-dataset', action='store_true',
