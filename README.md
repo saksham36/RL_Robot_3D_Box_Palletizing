@@ -3,7 +3,8 @@
 ## 📝 Table of Contents
 
 - [About](#about)
-- [Built Using](#built_using)
+- [Considerations](#considerations)
+- [Theory](#theory)
 - [Getting Started](#getting_started)
 - [Usage](#usage)
 - [TODO](#todo)
@@ -28,11 +29,11 @@ Modelled the palletizing problem as a POMDP and solved it using a Soft-Actor Cri
 - State is made of 2 components. $s_p, s_b$
 
 1. The palette state $s_p$ can be understood as the height state of the pallete. It's of size $L\times W$
-2. The box state $s_b$ captures the state of the boxes. $s_b = \{b_i\} i=\{1,...,n}$ where $n$ is the number of boxes in the sequence. $b_i$ = $l_i, w_i, h_i, P_i$. Where $P_i = 0$ if the box is yet to be loaded, $1$ if is loaded successfully, $-1$ if discarded.
+2. The box state $s_b$ captures the state of the boxes. $s_b = \{b_i\}$, $i=\{1,...,n}$ where $n$ is the number of boxes in the sequence. $b_i$ = $(l_i, w_i, h_i, P_i)$. Where $P_i = 0$ if the box is yet to be loaded, $1$ if is loaded successfully, $-1$ if discarded.
 
 ### Action
 
-Since the boxes are placed in a sequence, we only care of the boxes orientation and location placed. Hence $a = (a_o, a_l)$, $a_o_i \in \{(l_i, w_i, h_i), (l_i, h_i, w_i), (w_i, l_i, h_i), (w_i, h_i, l_i), (h_i, l_i, w_i), (h_i, w_i, l_i)} and $a_l is a coordinate of where the front, lower, left corner of the box is placed in the palette.
+Since the boxes are placed in a sequence, we only care of the boxes orientation and location placed. Hence $a = (a_o, a_l)$, $a_{o_i} \in \left((l_i, w_i, h_i), (l_i, h_i, w_i), (w_i, l_i, h_i), (w_i, h_i, l_i), (h_i, l_i, w_i), (h_i, w_i, l_i)\right)$ and $a_l$ is a coordinate of where the front, lower, left corner of the box is placed in the palette.
 
 ### Observation
 
