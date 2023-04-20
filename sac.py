@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as F
 from torch.optim import Adam
 from utils.utils import soft_update, hard_update
-from model import GaussianPolicy, QNetwork, DeterministicPolicy
+from model import QNetwork, DeterministicPolicy
 
 
 class SAC(object):
@@ -141,10 +141,10 @@ class SAC(object):
 
     def save_checkpoint(self, save_path, env_name, suffix="", ckpt_path=None):
         '''Save model parameters'''
-        if not os.path.exists(save_path + 'checkpoints/'):
-            os.makedirs(save_path+'checkpoints/')
+        if not os.path.exists(save_path + '/checkpoints/'):
+            os.makedirs(save_path+'/checkpoints/')
         if ckpt_path is None:
-            ckpt_path = save_path + "checkpoints/sac_checkpoint_{}_{}".format(
+            ckpt_path = save_path + "/checkpoints/sac_checkpoint_{}_{}".format(
                 env_name, suffix)
         print('Saving models to {}'.format(ckpt_path))
         torch.save({'policy_state_dict': self.policy.state_dict(),

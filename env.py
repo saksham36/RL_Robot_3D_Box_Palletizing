@@ -8,7 +8,6 @@ import torch
 import copy
 import numpy as np
 import torch.nn.functional as F
-from scipy.ndimage.filters import convolve
 
 # from gym.spaces.box import Box
 from utils.tools import read_config
@@ -49,6 +48,7 @@ class Environment(object):
     def create_sequence(self):
         ''' Create a sequence of boxes to be loaded'''
         # sequence contains the index of box to be loaded
+        assert self.fixed_sequence is not None
         if self.fixed_sequence is not None:
             sequence = self.fixed_sequence
         else:
@@ -124,16 +124,24 @@ class Environment(object):
             # print("Reward: ", r)
             r += self.instability_penalty(state, action, orientation)
             # print("Instability penalty: ", r*self.instability_penalty(
-            #     state, action, orientation))
+            # state, action, orientation))
 
         return r
 
     def instability_penalty(self, state, action, orientation):
         ''' Instability penalty via local differencing'''
+        selected_location_idx = np.argmax(action[:-6])
+        selected_location = self.action_location[selected_location_idx]
+        selected_orientation = np.argmax(action[-6:])
+        selected_height_map = state[0][selected_location[0]: selected_location[0] + orientation[0],
+                                       selected_location[1]: selected_location[1] + orientation[1]]
 
-        convolved_state = convolve(state[0], self.difference_kernel)
-        rmse = np.sqrt(np.mean(np.square(convolved_state)))
-        return rmse/np.prod([self.length, self.width])
+        theta = np.sqrt(np.mean(np.square(np.arctan2(selected_height_map[0, :] - selected_height_map[-1, :],
+                                                     selected_height_map.shape[1])))) +\
+            np.sqrt(np.mean(np.square(np.arctan2(selected_height_map[:, 0] - selected_height_map[:, -1],
+                                      selected_height_map.shape[0]))))
+
+        return -0.1*theta/np.pi
         # return 0.01 * F.conv2d(torch.from_numpy(state[0]), self.difference_kernel)
 
     def step(self, time_step, state, observation, action):
