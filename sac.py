@@ -37,7 +37,7 @@ class SAC(object):
         self.critic = QNetwork(
             num_inputs, self.action_size, args.hidden_size).to(device=self.device)
         self.critic_optim = Adam(
-            self.critic.parameters(), lr=args.learning_rate/100)
+            self.critic.parameters(), lr=args.learning_rate/1000)
 
         self.critic_target = QNetwork(
             num_inputs, self.action_size, args.hidden_size).to(self.device)
